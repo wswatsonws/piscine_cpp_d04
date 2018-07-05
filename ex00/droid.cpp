@@ -1,95 +1,143 @@
+#include <iostream>
 #include "droid.hh"
 
-Droid::Droid(std::string id) : id(id), energy(50), attack(25), toughness(15) {
-	status = new std::string("Standing by");
-	speak("Activated");
+Droid::Droid(std::string const& id) : _id(id), _energy(50), _attack(25),
+    _thoughness(15), _status(NULL)
+{
+    _status = new std::string("Standing by");
+    std::cout << "Droid '" << _id << "' Activated" << std::endl;
 }
 
-Droid::Droid(Droid const & droid) : id(droid.id), energy(droid.energy), attack(droid.attack), toughness(droid.toughness) {
-	if (droid.status) {
-		status = new std::string(*(droid.status));
-	}
-	else {
-		status = new std::string("Standing by");
-	}
-	speak("Activated, Memory Dumped");
+Droid::Droid(Droid const& other) : _id(other._id), _energy(other._energy),
+    _attack(other._attack), _thoughness(other._thoughness), _status(NULL)
+{
+    if (other._status)
+    {
+        if (_status)
+            delete _status;
+        _status = new std::string(*other._status);
+    }
+    else if (_status)
+    {
+        delete _status;
+        _status = NULL;
+    }
+    std::cout << "Droid '" << _id << "' Activated, Memory Dumped" << std::endl;
 }
 
-Droid::~Droid() {
-	if (status) {
-		delete status;
-	}
-	speak("Destroyed");
+Droid::~Droid()
+{
+    if (_status)
+        delete _status;
+    std::cout << "Droid '" << _id << "' Destroyed" << std::endl;
 }
 
-std::string Droid::getId() const {
-	return id;
+Droid& Droid::operator=(Droid const& other)
+{
+    if (this == &other)
+        return *this;
+    
+    _id = other._id;
+    _energy = other._energy;
+    if (other._status)
+    {
+        if (_status)
+            *_status = *other._status;
+        else
+            _status = new std::string(*other._status);
+    }
+    else if (_status)
+    {
+        delete _status;
+        _status = NULL;
+    }
+    return *this;
 }
 
-size_t Droid::getEnergy() const {
-	return energy;
+std::string const& Droid::getId() const
+{
+    return _id;
 }
 
-size_t Droid::getAttack() const {
-	return attack;
+void Droid::setId(std::string const& id)
+{
+    _id = id;
 }
 
-size_t Droid::getToughness() const {
-	return toughness;
+size_t Droid::getEnergy() const
+{
+    return _energy;
 }
 
-std::string *Droid::getStatus() const {
-	return status;
+void Droid::setEnergy(size_t const val)
+{
+    _energy = val;
+    if (_energy> 100)
+        _energy = 100;
 }
 
-void Droid::setId(std::string id) {
-	this->id = id;
+size_t Droid::getAttack() const
+{
+    return _attack;
 }
 
-void Droid::setEnergy(size_t energy) {
-	this->energy = energy;
+size_t Droid::getToughness() const
+{
+    return _thoughness;
 }
 
-void Droid::setStatus(std::string* status) {
-	if (this->status) {
-		delete this->status;
-	}
-	this->status = status;
+size_t Droid::getThoughness() const
+{
+    return _thoughness;
 }
 
-Droid& Droid::operator=(Droid const & droid) {
-	id = droid.id;
-	energy = droid.energy;
-	delete status;
-	status = new std::string(*(droid.status));
-	return *this;
+std::string const* Droid::getStatus() const
+{
+    return _status;
 }
 
-bool Droid::operator ==(Droid const & droid) const {
-	return id == droid.id &&
-		energy == droid.energy &&
-		attack == droid.attack &&
-		toughness == droid.toughness &&
-		*status == *(droid.status);
+void Droid::setStatus(std::string* val)
+{
+    if (_status)
+        delete _status;
+    _status = val;
 }
 
-bool Droid::operator !=(Droid const & droid) const {
-	return !(*this == droid);
+void Droid::setStatus(std::string const& val)
+{
+    if (_status)
+        *_status = val;
+    else
+        _status = new std::string(val);
 }
 
-Droid& Droid::operator <<(size_t & energy) {
-	if (this->energy < ENERGY_MAX) {
-		int take = std::min(ENERGY_MAX - this->energy, energy);
-		this->energy += take;
-		energy -= take;
-	}
-	return *this;
+bool Droid::operator==(Droid const& other) const
+{
+    return getAttack() == other.getAttack() && getToughness() == other.getToughness() && getId() == other.getId() && getStatus() && other.getStatus() && *(getStatus()) == *(other.getStatus());
 }
 
-void Droid::speak(std::string message) {
-	std::cout << "Droid '" << id << "' " << message << std::endl;
+bool Droid::operator!=(Droid const& other) const
+{
+    return !(getAttack() == other.getAttack() && getToughness() == other.getToughness() && getId() == other.getId() && getStatus() && other.getStatus() && *(getStatus()) == *(other.getStatus()));
 }
 
-std::ostream & operator<<(std::ostream & os, Droid const & droid) {
-	return os << "Droid '" << droid.getId() << "', " << *(droid.getStatus()) << ", " << droid.getEnergy();
+Droid& operator<<(Droid& droid, size_t& value)
+{
+    if (droid.getEnergy() + value > 100)
+    {
+        value -= 100 - droid.getEnergy();
+        droid.setEnergy(100);
+    }
+    else
+    {
+        droid.setEnergy(droid.getEnergy() + value);
+        value = 0;
+    }
+    return droid;
+}
+
+std::ostream& operator<<(std::ostream& stream, Droid const& droid)
+{
+    stream << "Droid '" << droid.getId() << "', " << (droid.getStatus() ? *droid.getStatus() : "") << ", " << droid.getEnergy();
+    return stream;
 }

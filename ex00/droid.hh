@@ -1,47 +1,40 @@
 #ifndef DROID_H_
-#define DROID_H_
+# define DROID_H_
 
-#include <string>
 #include <iostream>
-#include <algorithm>
+#include <string>
 
-#define ENERGY_MAX 100
-
-class Droid {
-private:
-	std::string id;
-	size_t energy;
-	size_t const attack;
-	size_t const toughness;
-	std::string *status;
-
+class Droid
+{
 public:
-	Droid(std::string id = "");
-	Droid(Droid const & droid);
-	~Droid();
+	Droid(std::string const& id = "");
+	Droid(Droid const& other);
+	virtual ~Droid();
 
-	std::string getId() const;
+	Droid& operator=(Droid const& other);
+	bool operator==(Droid const& other) const;
+	bool operator!=(Droid const& other) const;
+
+	std::string const& getId() const;
+	void setId(std::string const& id);
 	size_t getEnergy() const;
+	void setEnergy(size_t const val);
 	size_t getAttack() const;
 	size_t getToughness() const;
-	std::string *getStatus() const;
-
-	void setId(std::string id);
-	void setEnergy(size_t energy);
-	void setStatus(std::string *status);
-
-	Droid& operator=(Droid const & droid);
-
-	bool operator==(Droid const & droid) const;
-	bool operator!=(Droid const & droid) const;
-
-	Droid& operator<<(size_t & energy);
+	size_t getThoughness() const;
+	std::string const* getStatus() const;
+	void setStatus(std::string* val);
+	void setStatus(std::string const& val);
 
 private:
-	void speak(std::string message);
-
+	std::string _id;
+	size_t _energy;
+	size_t const _attack;
+	size_t const _thoughness;
+	std::string* _status;
 };
 
-std::ostream & operator<<(std::ostream & os, Droid const & droid);
+Droid& operator<<(Droid& droid, size_t& value);
+std::ostream& operator<<(std::ostream& stream, Droid const& droid);
 
 #endif
