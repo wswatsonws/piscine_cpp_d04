@@ -1,191 +1,177 @@
+#include <cstddef>
+#include <string>
 #include <iostream>
 #include "droid.hh"
+#include "droidmemory.hh"
 
-Droid::Droid(std::string const& id) : _id(id), _energy(50), _attack(25),
-    _thoughness(15), _status(NULL), _battleData(NULL)
+Droid::Droid(std::string id)
+	: Id(id),
+	  Energy(50),
+	  Attack(25),
+	  Toughness(15),
+	  Status(nullptr),
+	  BattleData(new DroidMemory())
 {
-    _status = new std::string("Standing by");
-    _battleData = new DroidMemory();
-    std::cout << "Droid '" << _id << "' Activated" << std::endl;
+	Status = new std::string("Standing by");
+	std::cout << "Droid '" << Id << "' Activated\n";
 }
 
-Droid::Droid(Droid const& other) : _id(other._id), _energy(50),
-    _attack(other._attack), _thoughness(other._thoughness), _status(NULL),
-    _battleData(NULL)
+Droid::Droid(Droid const &other)
+	: Id(other.Id),
+	  Energy(other.Energy),
+	  Attack(other.Attack),
+	  Toughness(other.Toughness),
+	  Status(nullptr),
+	  BattleData(nullptr)
 {
-    if (other._status)
-    {
-        if (_status)
-            delete _status;
-        _status = new std::string(*other._status);
-    }
-    else if (_status)
-    {
-        delete _status;
-        _status = NULL;
-    }
-    _battleData = new DroidMemory(*other._battleData);
-
-    std::cout << "Droid '" << _id << "' Activated, Memory Dumped" << std::endl;
+	if (other.Status) {
+		if (Status)
+			delete Status;
+		Status = new std::string(*other.Status);
+	} else if (Status) {
+		delete Status;
+		Status = nullptr;
+	}
+	BattleData = new DroidMemory(*other.BattleData);
+	std::cout << "Droid '" << Id << "' Activated, Memory Dumped\n";
 }
 
 Droid::~Droid()
 {
-    if (_status)
-        delete _status;
-    if (_battleData)
-        delete _battleData;
-    std::cout << "Droid '" << _id << "' Destroyed" << std::endl;
+	if (Status)
+		delete Status;
+	std::cout << "Droid '" << Id << "' Destroyed\n";
 }
 
-Droid& Droid::operator=(Droid const& other)
+Droid	&Droid::operator=(Droid const &other)
 {
-    if (this == &other)
-        return *this;
-
-    _id = other._id;
-    _energy = 50;
-    if (other._status)
-    {
-        if (_status)
-            *_status = *other._status;
-        else
-            _status = new std::string(*other._status);
-    }
-    else if (_status)
-    {
-        delete _status;
-        _status = NULL;
-    }
-    if (_battleData)
-        delete _battleData;
-    _battleData = new DroidMemory(*other._battleData);
-    return *this;
+	if (this == &other)
+	    return (*this);
+	Id = other.Id;
+	if (other.Status) {
+		if (Status)
+			*Status = *other.Status;
+		else
+			Status = new std::string(*other.Status);
+	} else if (Status) {
+		delete Status;
+		Status = nullptr;
+	}
+	if (BattleData)
+		delete BattleData;
+	BattleData = new DroidMemory(*other.BattleData);
+	return *this;
 }
 
-std::string const& Droid::getId() const
+std::string const	&Droid::getId() const
 {
-    return _id;
+	return Id;
 }
 
-void Droid::setId(std::string const& id)
+size_t	Droid::getEnergy() const
 {
-    _id = id;
+	return Energy;
 }
 
-size_t Droid::getEnergy() const
+size_t	Droid::getAttack() const
 {
-    return _energy;
+	return Attack;
 }
 
-void Droid::setEnergy(size_t val)
+size_t	Droid::getToughness() const
 {
-    if (val > 100)
-        val = 100;
-    _energy = val;
+	return Toughness;
 }
 
-size_t Droid::getAttack() const
+std::string const	*Droid::getStatus() const
 {
-    return _attack;
+	return Status;
 }
 
-size_t Droid::getThoughness() const
+void	Droid::setId(std::string next)
 {
-    return _thoughness;
+	Id = next;
 }
 
-size_t Droid::getToughness() const
+void	Droid::setEnergy(size_t next)
 {
-    return _thoughness;
+	if (next > 100)
+		Energy = 100;
+	else
+		Energy = next;
 }
 
-std::string const* Droid::getStatus() const
+void	Droid::setStatus(std::string *next)
 {
-    return _status;
+	if (Status)
+		delete Status;
+	Status = next;
 }
 
-void Droid::setStatus(std::string* val)
+bool	Droid::operator==(Droid const &other) const
 {
-    if (_status)
-        delete _status;
-    _status = val;
+	return *Status == *(other.Status);
 }
 
-void Droid::setStatus(std::string const& val)
+bool	Droid::operator!=(Droid const &other) const
 {
-    if (_status)
-        *_status = val;
-    else
-        _status = new std::string(val);
+	return !(*Status == *(other.Status));
 }
 
-bool Droid::operator==(Droid const& other) const
+Droid	&Droid::operator<<(size_t &energy)
 {
-    return getStatus() && other.getStatus() && *getStatus() == *(other.getStatus());
+	if (energy + Energy > 100) {
+		energy -= (100 - Energy);
+		setEnergy(100);
+	} else {
+		Energy += energy;
+		energy = 0;
+	}
+	return *this;
 }
 
-bool Droid::operator!=(Droid const& other) const
+std::ostream	&operator<<(std::ostream &stream, Droid const &droid)
 {
-    return !(getStatus() && other.getStatus() && *getStatus() == *(other.getStatus()));
+	stream << "Droid '" << droid.getId()
+	       << "', " << (droid.getStatus() ? *(droid.getStatus()) : "")
+	       << ", " << droid.getEnergy();
+	return stream;
 }
 
-Droid& operator<<(Droid& droid, size_t& value)
+DroidMemory const	*Droid::getBattleData() const
 {
-    if (droid.getEnergy() + value > 100)
-    {
-        value -= 100 - droid.getEnergy();
-        droid.setEnergy(100);
-    }
-    else
-    {
-        droid.setEnergy(droid.getEnergy() + value);
-        value = 0;
-    }
-    return droid;
+	return BattleData;
 }
 
-std::ostream& operator<<(std::ostream& stream, Droid const& droid)
+DroidMemory	*Droid::getBattleData()
 {
-    stream << "Droid '" << droid.getId() << "', " << (droid.getStatus() ? *droid.getStatus() : "") << ", " << droid.getEnergy();
-    return stream;
+	return BattleData;
 }
 
-DroidMemory const* Droid::getBattleData() const
+void	Droid::setBattleData(DroidMemory *mem)
 {
-    return _battleData;
+	BattleData = mem;
 }
 
-DroidMemory* Droid::getBattleData()
+bool	Droid::operator()(const std::string *task, size_t exp)
 {
-    return _battleData;
-}
-
-void Droid::setBattleData(DroidMemory* mem)
-{
-    _battleData = mem;
-}
-
-bool Droid::operator()(std::string const* task, size_t exp)
-{
-    if (!task || !_battleData)
-        return false;
-    if (!_status)
-        _status = new std::string("");
-    if (_energy <= 10)
-    {
-        *_status = "Battery Low";
-        _energy = 0;
-        return false;
-    }
-    _energy -= 10;
-    if (_battleData->getExp() < exp)
-    {
-        *_status = *task + " - Failed!";
-        _battleData->setExp(_battleData->getExp() + exp);
-        return false;
-    }
-    *_status = *task + " - Completed!";
-    _battleData->setExp(_battleData->getExp() + (exp / 2));
-    return true;
+	if (!task || !BattleData)
+		return false;
+	if (!Status)
+		Status = new std::string("");
+	if (Energy <= 10)
+	{
+		*Status = "Battery Low";
+		Energy = 0;
+		return false;
+	}
+	Energy -= 10;
+	if (BattleData->getExp() < exp){
+		*Status = *task + " - Failed!";
+		BattleData->setExp(BattleData->getExp() + exp);
+		return false;
+	}
+	*Status = *task + " - Completed!";
+	BattleData->setExp(BattleData->getExp() + (exp / 2));
+	return true;
 }
