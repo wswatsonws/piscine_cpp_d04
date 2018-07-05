@@ -1,15 +1,5 @@
-/*
-** droidmemory.hh for ex01 in /home/fest/Epitech/Piscine_tek2/piscine_cpp_d08-2016-ginter_m/ex01
-**
-** Made by maxime ginters
-** Login  <ginter_m@epitech.eu>
-**
-** Started on  Wed Jan 16 13:23:30 2013 maxime ginters
-** Last update Wed Jan 16 22:55:54 2013 maxime ginters
-*/
-
 #ifndef DROIDMEMORY_H_
-# define DROIDMEMORY_H_
+#define DROIDMEMORY_H_
 
 #include <iostream>
 

@@ -1,13 +1,3 @@
-/*
-** droid.hh for ex00 in /home/fest/Epitech/Piscine_tek2/piscine_cpp_d08-2016-ginter_m/ex00
-**
-** Made by maxime ginters
-** Login  <ginter_m@epitech.eu>
-**
-** Started on  Wed Jan 16 09:28:08 2013 maxime ginters
-** Last update Wed Jan 16 22:52:54 2013 maxime ginters
-*/
-
 #ifndef DROID_H_
 # define DROID_H_
 
