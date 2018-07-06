@@ -1,159 +1,152 @@
-#include <iostream>
-#include <string>
 #include "carrier.hh"
 
-Carrier::Carrier(std::string id)
-	: Id(id),
-	  Energy(300),
-	  Attack(100),
-	  Toughness(90)
+Carrier::Carrier(std::string const& id) : _id(id), _energy(300), _attack(100),
+	_toughness(90), _speed(0)
 {
-	for (int i = 0; i < 5; ++i) {
-		Droids[i] = nullptr;
-	}
+	for (int i = 0; i < 5; ++i)
+		_droids[i] = NULL;
 }
 
 Carrier::~Carrier()
 {
-	for (int i = 0; i < 5; ++i) {
-		if (Droids[i])
-			delete Droids[i];
-	}
+	for (int i = 0; i < 5; ++i)
+		if (_droids[i])
+			delete _droids[i];
 }
 
-Carrier	&Carrier::operator~()
+std::string const& Carrier::getId() const
 {
-	int j = 0;
-
-	for (int i = 0; i < 5; ++i) {
-		if (Droids[i])
-			++j;
-	}
-	if (j == 0)
-		Speed = 0;
-	else
-		Speed = 100 - (10 * j);
-	return *this;
+	return _id;
 }
 
-std::string const	&Carrier::getId() const
+void Carrier::setId(std::string const& val)
 {
-	return Id;
+	_id = val;
 }
 
-void	Carrier::setId(std::string const &val)
+size_t Carrier::getEnergy() const
 {
-	Id = val;
+	return _energy;
 }
 
-size_t	Carrier::getEnergy() const
-{
-	return Energy;
-}
-
-void	Carrier::setEnergy(size_t val)
+void Carrier::setEnergy(size_t val)
 {
 	if (val > 600)
 		val = 600;
-	Energy = val;
+	_energy = val;
 }
 
-size_t	Carrier::getAttack() const
+size_t Carrier::getAttack() const
 {
-	return Attack;
+	return _attack;
 }
 
-size_t	Carrier::getToughness() const
+size_t Carrier::getToughness() const
 {
-	return Toughness;
+	return _toughness;
 }
 
-size_t	Carrier::getSpeed() const
+size_t Carrier::getSpeed() const
 {
-	return Speed;
+	return _speed;
 }
 
-void	Carrier::setSpeed(size_t val)
+void Carrier::setSpeed(size_t val)
 {
-	Speed = val;
+	_speed = val;
 }
 
-Carrier	&Carrier::operator<<(Droid *&droid)
+Carrier& Carrier::operator<<(Droid*& droid)
 {
-	for (int i = 0; i < 5; ++i) {
-		if (!Droids[i]) {
-			Droids[i] = droid;
+	for (int i = 0; i < 5; ++i)
+		if (!_droids[i])
+		{
+			_droids[i] = droid;
 			droid = NULL;
 			~(*this);
 			return *this;
 		}
-	}
 	return *this;
 }
 
-Carrier	&Carrier::operator>>(Droid*& droid)
+Carrier& Carrier::operator>>(Droid*& droid)
 {
-	for (int i = 0; i < 5; ++i) {
-		if (Droids[i]) {
-			droid = Droids[i];
-			Droids[i] = nullptr;
+	for (int i = 0; i < 5; ++i)
+		if (_droids[i])
+		{
+			droid = _droids[i];
+			_droids[i] = NULL;
 			~(*this);
 			return *this;
 		}
-	}
-	droid = nullptr;
+	droid = NULL;
 	return *this;
 }
 
-Droid const	*&Carrier::operator[](unsigned int const index)
+Droid const*& Carrier::operator[](unsigned int const index)
 {
-	return (Droid const *&)Droids[index];
+	return (Droid const*&)_droids[index];
 }
 
-Droid const	*Carrier::operator[](unsigned int const index) const
+Droid const* Carrier::operator[](unsigned int const index) const
 {
-	return Droids[index];
+	return _droids[index];
 }
 
+Carrier& Carrier::operator~()
+{
+	int count = 0;
+	for (int i = 0; i < 5; ++i)
+		if (_droids[i])
+			++count;
+
+	if (count == 0)
+		_speed = 0;
+	else
+		_speed = 100 - (10 * count);
+	return *this;
+}
+    
 bool Carrier::operator()(int x, int y)
 {
-	int j = 0;
-
 	if (x < 0)
-		x = -x;
+		x *= -1;
 	if (y < 0)
-		y = -y;
-	for (int i = 0; i < 5; ++i) {
-		if (Droids[i])
-			++j;
-	}
-	if (j == 0 || (unsigned int)((x + y) * (10 + j)) > Energy)
+		y *= -1;
+	int count = 0;
+	for (int i = 0; i < 5; ++i)
+		if (_droids[i])
+			++count;
+	if (count == 0 || (unsigned int)((x + y) * (10 + count)) > _energy)
 		return false;
-	Energy -= (unsigned int)((x + y) * (10 + j));
+	_energy -= (unsigned int)((x + y) * (10 + count));
 	return true;
 }
 
-std::ostream	&operator<<(std::ostream &stream, Carrier const &carrier)
+std::ostream& operator<<(std::ostream& stream, Carrier const& carrier)
 {
 	stream << "Carrier '" << carrier.getId() << "' Droid(s) on-board:" << std::endl;
-	for (int i = 0; i < 5; ++i) {
+	for (int i = 0; i < 5; ++i)
+	{
 		stream << "[" << i << "] : ";
 		if (carrier[i])
 			stream << *carrier[i] << std::endl;
 		else
 			stream << "Free" << std::endl;
 	}
-	stream << "Speed : " << carrier.getSpeed()
-	       << ", Energy " << carrier.getEnergy();
+	stream << "Speed : " << carrier.getSpeed() << ", Energy " << carrier.getEnergy();
 	return stream;
 }
 
 Carrier& operator<<(Carrier& carrier, size_t& value)
 {
-	if (carrier.getEnergy() + value > 600) {
+	if (carrier.getEnergy() + value > 600)
+	{
 		value -= 600 - carrier.getEnergy();
 		carrier.setEnergy(600);
-	} else {
+	}
+	else
+	{
 		carrier.setEnergy(carrier.getEnergy() + value);
 		value = 0;
 	}

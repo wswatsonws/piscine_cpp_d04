@@ -1,9 +1,10 @@
+#include <cstdlib>
 #include "droidmemory.hh"
 
 DroidMemory::DroidMemory()
-	: FingerPrint(random()),
-	  Exp(0)
 {
+	this->_Exp = 0;
+	this->_FingerPrint = random();
 }
 
 DroidMemory::~DroidMemory()
@@ -12,103 +13,158 @@ DroidMemory::~DroidMemory()
 
 size_t	DroidMemory::getFingerPrint() const
 {
-    return FingerPrint;
+	return (this->_FingerPrint);
 }
 
-void	DroidMemory::setFingerPrint(size_t const value)
+void	DroidMemory::setFingerPrint(size_t finger)
 {
-    FingerPrint = value;
+	this->_FingerPrint = finger;
 }
 
-size_t DroidMemory::getExp() const
+size_t	DroidMemory::getExp() const
 {
-    return Exp;
+	return (this->_Exp);
 }
 
-void DroidMemory::setExp(size_t const value)
+void	DroidMemory::setExp(size_t exp)
 {
-    Exp = value;
+	this->_Exp = exp;
 }
 
-DroidMemory	&DroidMemory::operator<<(DroidMemory const &other)
+void DroidMemory::addXor(DroidMemory &dest, DroidMemory const &memory1,
+	DroidMemory const &memory2)
 {
-    setExp(getExp() + other.getExp());
-    setFingerPrint(getFingerPrint() ^ other.getFingerPrint());
-    return *this;
+	dest._Exp = memory1._Exp + memory2._Exp;
+	dest._FingerPrint = memory1._FingerPrint ^ memory2._FingerPrint;
 }
 
-DroidMemory	&DroidMemory::operator>>(DroidMemory &other) const
+DroidMemory& DroidMemory::operator<<(DroidMemory const &memory)
 {
-    other.setExp(getExp() + other.getExp());
-    other.setFingerPrint(getFingerPrint() ^ other.getFingerPrint());
-    return other;
+	DroidMemory::addXor(*this, *this, memory);
+	return (*this);
 }
 
-DroidMemory	&DroidMemory::operator+=(DroidMemory const &other)
+DroidMemory const & DroidMemory::operator>>(DroidMemory &memory) const
 {
-    setExp(getExp() + other.getExp());
-    setFingerPrint(getFingerPrint() ^ other.getFingerPrint());
-    return *this;
+	DroidMemory::addXor(memory, *this, memory);
+	return (memory);
 }
 
-DroidMemory& DroidMemory::operator+=(size_t const& val)
+DroidMemory& DroidMemory::operator+=(DroidMemory const &memory)
 {
-    setExp(getExp() + val);
-    setFingerPrint(getFingerPrint() ^ val);
-    return *this;
+	return (this->operator<<(memory));
 }
 
-DroidMemory	DroidMemory::operator+(DroidMemory const &other) const
+DroidMemory& DroidMemory::operator+=(size_t exp)
 {
-    DroidMemory	mem;
-
-    mem.setExp(getExp() + other.getExp());
-    mem.setFingerPrint(getFingerPrint() ^ other.getFingerPrint());
-    return mem;
+	this->_Exp += exp;
+	this->_FingerPrint ^= exp;
+	return (*this);
 }
 
-DroidMemory DroidMemory::operator+(size_t const val) const
+DroidMemory &DroidMemory::operator+(DroidMemory const &rhs)
 {
-    DroidMemory mem;
+	DroidMemory *tmp = new DroidMemory;
 
-    mem.setExp(getExp() + val);
-    mem.setFingerPrint(getFingerPrint() ^ val);
-    return mem;
+	tmp->_Exp += rhs._Exp;
+	tmp->_FingerPrint ^= rhs._FingerPrint;
+	return (*tmp);
 }
 
-std::ostream &operator<<(std::ostream& stream, DroidMemory const &memory)
+DroidMemory &DroidMemory::operator+(size_t rhs) const
 {
-    stream << "DroidMemory '" << memory.getFingerPrint()
-	   << "', " << memory.getExp();
-    return stream;
+    DroidMemory *mem = new DroidMemory;
+
+    mem->_Exp += rhs;
+    mem->_FingerPrint ^= rhs;
+    return (*mem);
 }
 
-bool	DroidMemory::operator==(DroidMemory const &other) const
+
+std::ostream &operator<<(std::ostream &s, const DroidMemory &droid)
 {
-	return (Exp == other.Exp) && (FingerPrint == other.FingerPrint);
+	return (s << "DroidMemory '" << droid.getFingerPrint() << "', "
+	<< droid.getExp());
 }
 
-bool	DroidMemory::operator!=(DroidMemory const &other) const
+bool	DroidMemory::operator==(DroidMemory const &memory) const
 {
-	return !((Exp == other.Exp) && (FingerPrint == other.FingerPrint));
+	if (this->_Exp == memory._Exp &&
+		this->_FingerPrint == memory._FingerPrint)
+		return (true);
+	else
+		return (false);
 }
 
-bool	DroidMemory::operator<(DroidMemory const &other) const
+bool	DroidMemory::operator!=(DroidMemory const &memory) const
 {
-	return Exp < other.Exp;
+	if (this->_Exp == memory._Exp &&
+		this->_FingerPrint == memory._FingerPrint)
+		return (false);
+	else
+		return (true);
 }
 
-bool	DroidMemory::operator>(DroidMemory const &other) const
+bool DroidMemory::operator>(DroidMemory const &memory) const
 {
-	return Exp > other.Exp;
+	if (this->_Exp > memory._Exp)
+		return (true);
+	else
+		return (false);
 }
 
-bool	DroidMemory::operator<=(DroidMemory const &other) const
+bool DroidMemory::operator<(DroidMemory const &memory) const
 {
-	return Exp <= other.Exp;
+	if (this->_Exp < memory._Exp)
+		return (true);
+	else
+		return (false);
 }
 
-bool	DroidMemory::operator>=(DroidMemory const &other) const
+bool DroidMemory::operator>=(DroidMemory const &memory) const
 {
-	return Exp >= other.Exp;
+	if (this->_Exp >= memory._Exp)
+		return (true);
+	else
+		return (false);
+}
+
+bool DroidMemory::operator<=(DroidMemory const &memory) const
+{
+	if (this->_Exp <= memory._Exp)
+		return (true);
+	else
+		return (false);
+}
+
+bool DroidMemory::operator>(const size_t exp) const
+{
+	if (this->_Exp > exp)
+		return (true);
+	else
+		return (false);
+}
+
+bool DroidMemory::operator<(const size_t exp) const
+{
+	if (this->_Exp < exp)
+		return (true);
+	else
+		return (false);
+}
+
+bool DroidMemory::operator>=(const size_t exp) const
+{
+	if (this->_Exp >= exp)
+		return (true);
+	else
+		return (false);
+}
+
+bool DroidMemory::operator<=(const size_t exp) const
+{
+	if (this->_Exp <= exp)
+		return (true);
+	else
+		return (false);
 }

@@ -1,33 +1,51 @@
-#ifndef DROIDMEM_HPP
-#define DROIDMEM_HPP
+#ifndef DROIDMEMORY_H_
+#define DROIDMEMORY_H_
 
 #include <iostream>
 
-class DroidMemory {
-public:
+class DroidMemory
+{
+	public:
 	DroidMemory();
 	~DroidMemory();
 	size_t getFingerPrint() const;
-	void setFingerPrint(size_t const value);
+	void setFingerPrint(size_t);
 	size_t getExp() const;
-	void setExp(size_t const value);
-	DroidMemory &operator<<(DroidMemory const &other);
-	DroidMemory &operator>>(DroidMemory &other) const;
-	DroidMemory &operator+=(DroidMemory const &other);
-	DroidMemory &operator+=(size_t const &val);
-	DroidMemory operator+(DroidMemory const &other) const;
-	DroidMemory operator+(size_t const val) const;
-	bool operator==(DroidMemory const &other) const;
-	bool operator!=(DroidMemory const &other) const;
-	bool operator<(DroidMemory const &other) const;
-	bool operator>(DroidMemory const &other) const;
-	bool operator<=(DroidMemory const &other) const;
-	bool operator>=(DroidMemory const &other) const;
-private:
-	size_t	FingerPrint;
-	size_t	Exp;
+	void setExp(size_t);
+
+	static void addXor(DroidMemory &dest, DroidMemory const &memory1,
+		DroidMemory const &memory2);
+
+	DroidMemory &operator<<(DroidMemory const &memory);
+	DroidMemory const  &operator>>(DroidMemory &memory) const;
+
+	DroidMemory &operator+=(DroidMemory const &memory);
+	DroidMemory &operator+=(size_t);
+
+	DroidMemory &operator+(DroidMemory const &memory);
+	DroidMemory &operator+(size_t) const;
+
+	bool operator==(DroidMemory const &memory) const;
+	bool operator!=(DroidMemory const &memory) const;
+
+	bool operator>(DroidMemory const &memory) const;
+	bool operator<(DroidMemory const &memory) const;
+
+	bool operator>=(DroidMemory const &memory) const;
+	bool operator<=(DroidMemory const &memory) const;
+
+	bool operator>(const size_t) const;
+	bool operator<(const size_t) const;
+
+	bool operator>=(const size_t) const;
+	bool operator<=(const size_t) const;
+
+	private:
+	size_t _FingerPrint;
+	size_t _Exp;
 };
 
-std::ostream& operator<<(std::ostream& stream, DroidMemory const& memory);
+std::ostream &operator<<(std::ostream &s, const DroidMemory &droid);
+
 
 #endif

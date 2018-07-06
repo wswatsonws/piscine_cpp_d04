@@ -1,40 +1,44 @@
-#ifndef DROID_HPP
-#define DROID_HPP
+#ifndef DROID_H_
+#define DROID_H_
 
-#include <string>
 #include <iostream>
+#include <string>
 #include "droidmemory.hh"
 
-class Droid {
+class Droid
+{
 public:
-	Droid(std::string id);
-	Droid(Droid const &other);
+	Droid(const std::string id);
+	Droid (const Droid &droid);
 	~Droid();
-	Droid &operator=(Droid const &other);
-	std::string const &getId() const;
+	bool operator()(const std::string *task, size_t exp);
+
+	Droid& operator=(const Droid &droid);
+	Droid& operator<<(size_t &energy);
+	bool operator==(const Droid &droid) const;
+	bool operator!=(const Droid &droid) const;
+
+	std::string getId() const;
 	size_t getEnergy() const;
 	size_t getAttack() const;
 	size_t getToughness() const;
-	std::string const *getStatus() const;
-	void setId(std::string next);
-	void setEnergy(size_t next);
-	void setStatus(std::string *next);
-	bool operator==(Droid const &other) const;
-	bool operator!=(Droid const &other) const;
-	Droid	&operator<<(size_t &energy);
-	DroidMemory const *getBattleData() const;
-	DroidMemory *getBattleData();
-	void setBattleData(DroidMemory *mem);
-	bool operator()(const std::string *task, size_t exp);
+	std::string *getStatus() const;
+	void setId(std::string id);
+	void setEnergy(size_t energy);
+	void setStatus(std::string *status);
+	DroidMemory *getDroid() const;
+	void setDroid(DroidMemory*);
+
 private:
-	std::string	Id;
-	size_t		Energy;
-	const size_t	Attack;
-	const size_t	Toughness;
-	std::string	*Status;
-	DroidMemory	*BattleData;
+	std::string _id;
+	size_t _energy;
+	const size_t _attack;
+	const size_t _toughness;
+	std::string *_status;
+	DroidMemory *BattleData;
 };
 
-std::ostream &operator<<(std::ostream &stream, Droid const &droid);
+std::ostream &operator<<(std::ostream &s, const Droid &droid);
+
 
 #endif
