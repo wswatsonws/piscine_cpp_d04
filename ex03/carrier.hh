@@ -1,43 +1,44 @@
-#ifndef CARRIER_H_
-#define CARRIER_H_
+#ifndef CARRIER_H
+#define CARRIER_H
 
-#include <iostream>
-#include <string>
-#include "droid.hh"
+#include            "droid.hh"
 
 class Carrier
 {
-public:
-	Carrier(std::string const& id = "");
-	virtual ~Carrier();
-
-	std::string const& getId() const;
-	void setId(std::string const& val);
-	size_t getEnergy() const;
-	void setEnergy(size_t val);
-	size_t getAttack() const;
-	size_t getToughness() const;
-	size_t getSpeed() const;
-	void setSpeed(size_t val);
-
-	Carrier& operator<<(Droid*& droid);
-	Carrier& operator>>(Droid*& droid);
-
-	Droid const *& operator[](unsigned int const index);
-	Droid const* operator[](unsigned int const index) const;
-
-	Carrier &operator~();
-	bool operator()(int x, int y);
-
 private:
-	std::string _id;
-	size_t _energy;
-	size_t const _attack;
-	size_t const _toughness;
-	size_t _speed;
-	Droid* _droids[5];
+
+    std::string     Id;
+    size_t          Energy;
+    size_t const    Attack;
+    size_t const    Toughness;
+    size_t          Speed;
+    Droid           *Droids[5];
+    size_t          getNbDroids() const;
+
+public:
+
+    Carrier(std::string Id);
+    ~Carrier();
+
+    std::string     getId() const;
+    size_t          getEnergy() const;
+    size_t          getSpeed() const;
+
+    void            setId(std::string Id);
+    void            setEnergy(size_t energy);
+    void            setSpeed(size_t speed);
+
+    void            displayCarrier() const;
+
+    Carrier & operator<<(Droid *& BoardingDroid);
+    Carrier & operator<<(size_t & EnergyStock);
+    Carrier & operator>>(Droid *& BoardingDroid);
+    Droid *&  operator[](size_t const & index);
+    Droid * const &  operator[](size_t const & index) const;
+    Carrier & operator~();
+    bool    operator()(int const & posX, int const & posY);
 };
 
-std::ostream& operator<<(std::ostream& stream, Carrier const& carrier);
+std::ostream& operator<<(std::ostream &out, Carrier const & Carrier);
 
 #endif
